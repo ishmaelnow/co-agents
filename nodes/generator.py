@@ -15,9 +15,10 @@ llm = ChatOpenAI(
 def generate(state: SecretaryState) -> SecretaryState:
     prompt = ChatPromptTemplate.from_messages([
         ("system", "You are a company secretary."),
-        ("human", """Write a professional letter for the following task.
+        ("human", """Write a professional summary for the following task.
 
 Task: {task}
+Timestamp: {timestamp}
 
 If available, incorporate relevant insights from this search reflection:
 {search_reflection}""")
@@ -25,6 +26,7 @@ If available, incorporate relevant insights from this search reflection:
     chain = prompt | llm
     response = chain.invoke({
         "task": state.task,
+        "timestamp": state.timestamp or "No timestamp available",
         "search_reflection": state.search_reflection or "No external insights available."
     })
     return state.copy(update={"letter": response.content})
